@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three Acts</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const ChevronLeft = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        );
+
+        const App = () => {
+            const [currentView, setCurrentView] = useState('home');
+            const [selectedAct, setSelectedAct] = useState(null);
+
+            // Act configurations
+            const acts = {
+                1: {
+                    title: 'Act I',
+                    password: 'genesis',
+                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
+                    description: 'The Beginning'
+                },
+                2: {
+                    title: 'Act II',
+                    password: 'metamorphosis',
+                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
+                    description: 'The Transformation'
+                },
+                3: {
+                    title: 'Act III',
+                    password: 'revelation',
+                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
+                    description: 'The Culmination'
+                }
+            };
+
+            // Check URL parameters on mount and when URL changes
+            useEffect(() => {
+                const params = new URLSearchParams(window.location.search);
+                const actParam = params.get('act');
+                const passwordParam = params.get('password');
+
+                if (actParam && passwordParam) {
+                    const actNumber = parseInt(actParam);
+                    if (acts[actNumber] && acts[actNumber].password === passwordParam) {
+                        setSelectedAct(actNumber);
+                        setCurrentView('video');
+                    }
+                }
+            }, []);
+
+            const handleActSelect = (actNumber) => {
+                setSelectedAct(actNumber);
+                setCurrentView('password');
+            };
+
+            const handlePasswordSubmit = (e) => {
+                e.preventDefault();
+                const password = e.target.password.value;
+
+                if (acts[selectedAct].password === password) {
+                    // Update URL with password parameter
+                    const newUrl = `${window.location.pathname}?act=${selectedAct}&password=${password}`;
+                    window.history.pushState({}, '', newUrl);
+                    setCurrentView('video');
+                } else {
+                    alert('Incorrect password. Try again.');
+                    e.target.password.value = '';
+                }
+            };
+
+            const handleBackToHome = () => {
+                setCurrentView('home');
+                setSelectedAct(null);
+                window.history.pushState({}, '', window.location.pathname);
+            };
+
+            // Home View
+            if (currentView === 'home') {
+                return (
+                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
+                        <div className="max-w-2xl w-full">
+                            <h1 className="text-6xl font-light text-center mb-4 tracking-wider">
+                                THREE ACTS
+                            </h1>
+                            <p className="text-gray-500 text-center mb-16 tracking-wide">
+                                Choose your journey
+                            </p>
+
+                            <div className="space-y-6">
+                                {[1, 2, 3].map((actNumber) => (
+                                    <button
+                                        key={actNumber}
+                                        onClick={() => handleActSelect(actNumber)}
+                                        className="w-full bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 transition-all duration-300 py-6 px-8 rounded-lg group"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="text-left">
+                                                <h2 className="text-2xl font-light mb-1">
+                                                    {acts[actNumber].title}
+                                                </h2>
+                                                <p className="text-gray-500 text-sm">
+                                                    {acts[actNumber].description}
+                                                </p>
+                                            </div>
+                                            <div className="text-4xl font-thin text-gray-700 group-hover:text-gray-500 transition-colors">
+                                                →
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Password View
+            if (currentView === 'password') {
+                return (
+                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
+                        <div className="max-w-md w-full">
+                            <button
+                                onClick={handleBackToHome}
+                                className="mb-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2"
+                            >
+                                <ChevronLeft size={20} />
+                                <span>Back</span>
+                            </button>
+
+                            <h1 className="text-4xl font-light mb-2 tracking-wider">
+                                {acts[selectedAct].title}
+                            </h1>
+                            <p className="text-gray-500 mb-12">
+                                Enter the password to proceed
+                            </p>
+
+                            <form onSubmit={handlePasswordSubmit}>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    autoFocus
+                                    className="w-full bg-gray-900 border border-gray-800 focus:border-gray-600 outline-none px-6 py-4 rounded-lg text-lg mb-6 transition-colors"
+                                />
+                                <button
+                                    type="submit"
+                                    className="w-full bg-white text-black hover:bg-gray-200 transition-colors py-4 rounded-lg font-medium tracking-wide"
+                                >
+                                    ENTER
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Video View
+            if (currentView === 'video') {
+                return (
+                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
+                        <div className="max-w-5xl w-full">
+                            <button
+                                onClick={handleBackToHome}
+                                className="mb-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2"
+                            >
+                                <ChevronLeft size={20} />
+                                <span>Back to Home</span>
+                            </button>
+
+                            <h1 className="text-4xl font-light mb-8 tracking-wider">
+                                {acts[selectedAct].title}
+                            </h1>
+
+                            <div className="aspect-video w-full bg-gray-900 rounded-lg overflow-hidden">
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src={`https://www.youtube.com/embed/${acts[selectedAct].videoId}`}
+                                    title={acts[selectedAct].title}
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>
