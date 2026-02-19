@@ -11,12 +11,12 @@
     <style>
         :root {
             --bg: #080808;
-            --border: #2a2010;
-            --gold: #c9a84c;
-            --gold-dim: #7a5e25;
-            --red: #8b1a1a;
-            --text: #d4c9b0;
-            --text-dim: #7a7060;
+            --border: #4a3820;
+            --gold: #f0c84a;
+            --gold-dim: #c49a3c;
+            --red: #c0392b;
+            --text: #f0e8d0;
+            --text-dim: #b8a888;
         }
 
         * {
@@ -107,7 +107,7 @@
             text-align: center;
             line-height: 1;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 60px rgba(201, 168, 76, 0.3), 0 0 120px rgba(201, 168, 76, 0.1);
+            text-shadow: 0 0 60px rgba(240, 200, 74, 0.4), 0 0 120px rgba(240, 200, 74, 0.15);
             animation: fadeUp 2s ease 0.3s forwards;
             opacity: 0;
         }
@@ -134,7 +134,7 @@
 
         .act-btn {
             position: relative;
-            background: transparent;
+            background: rgba(240, 200, 74, 0.06);
             border: 1px solid var(--gold-dim);
             color: var(--gold);
             font-family: 'Josefin Sans', sans-serif;
@@ -161,7 +161,7 @@
         .act-btn:hover {
             color: var(--bg);
             border-color: var(--gold);
-            box-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+            box-shadow: 0 0 40px rgba(240, 200, 74, 0.25);
         }
 
         .act-btn:hover::before {
@@ -175,7 +175,7 @@
             flex-shrink: 0;
         }
 
-        /* ── SECTION LABEL + TITLE (modern / Josefin Sans) ── */
+        /* ── SECTION LABEL + TITLE ── */
         .section-label {
             font-family: 'Josefin Sans', sans-serif;
             font-size: 0.62rem;
@@ -194,7 +194,7 @@
             color: var(--gold);
             text-align: center;
             text-transform: uppercase;
-            text-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+            text-shadow: 0 0 40px rgba(240, 200, 74, 0.3);
             margin-bottom: 2.5rem;
         }
 
@@ -203,7 +203,7 @@
             position: fixed;
             top: 1.5rem;
             left: 1.5rem;
-            background: transparent;
+            background: rgba(240, 200, 74, 0.05);
             border: 1px solid var(--gold-dim);
             color: var(--gold-dim);
             font-family: 'Josefin Sans', sans-serif;
@@ -221,7 +221,7 @@
         .back-btn:hover {
             color: var(--gold);
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(201, 168, 76, 0.15);
+            box-shadow: 0 0 20px rgba(240, 200, 74, 0.2);
         }
 
         .back-btn.visible {
@@ -259,7 +259,7 @@
         .pw-input,
         .answer-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--gold-dim);
             color: var(--gold);
             font-family: 'Cormorant Garamond', serif;
@@ -274,7 +274,7 @@
         .pw-input:focus,
         .answer-input:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(201, 168, 76, 0.1);
+            box-shadow: 0 0 20px rgba(240, 200, 74, 0.15);
         }
 
         .pw-input::placeholder,
@@ -285,7 +285,7 @@
         }
 
         .pw-error {
-            color: var(--red);
+            color: #e05555;
             font-style: italic;
             font-size: 0.9rem;
             letter-spacing: 0.08em;
@@ -300,7 +300,7 @@
 
         /* ── SUBMIT BUTTON ── */
         .submit-btn {
-            background: transparent;
+            background: rgba(240, 200, 74, 0.06);
             border: 1px solid var(--gold-dim);
             color: var(--gold);
             font-family: 'Josefin Sans', sans-serif;
@@ -371,7 +371,7 @@
             justify-content: space-between;
             align-items: center;
             transition: border-color 0.3s;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .transcript-header:hover {
@@ -398,7 +398,7 @@
             transition: max-height 0.6s ease;
             border: 1px solid var(--border);
             border-top: none;
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .transcript-body.open {
@@ -459,7 +459,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--border);
+            background: #3a3020;
             transition: background 0.4s;
         }
 
@@ -497,7 +497,7 @@
 
         .budget-input {
             width: 80px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--gold-dim);
             color: var(--gold);
             font-family: 'Cormorant Garamond', serif;
@@ -529,11 +529,11 @@
         }
 
         .budget-total.invalid {
-            color: var(--red);
+            color: #e05555;
         }
 
         .budget-total.leisure-warning {
-            color: #a07830;
+            color: #d4943a;
             font-style: italic;
         }
 
@@ -557,11 +557,11 @@
 
             0%,
             100% {
-                filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.2));
+                filter: drop-shadow(0 0 20px rgba(240, 200, 74, 0.3));
             }
 
             50% {
-                filter: drop-shadow(0 0 60px rgba(201, 168, 76, 0.7));
+                filter: drop-shadow(0 0 60px rgba(240, 200, 74, 0.8));
             }
         }
 
@@ -632,9 +632,7 @@
     <canvas id="particle-canvas"></canvas>
     <button class="back-btn" id="backBtn" onclick="goHome()">← Return</button>
 
-    <!-- ══════════════════════════════
-     HOME
-══════════════════════════════ -->
+    <!-- HOME -->
     <div class="page active" id="page-home">
         <div class="home-eyebrow">A Mystery in Three Acts</div>
         <h1 class="home-title">Before I Choose You</h1>
@@ -648,9 +646,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT I — PASSWORD
-══════════════════════════════ -->
+    <!-- ACT I — PASSWORD -->
     <div class="page" id="page-act1-password">
         <div class="section-label">Act I</div>
         <h2 class="section-title">Identify the Suspect</h2>
@@ -668,9 +664,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT I — VIDEO
-══════════════════════════════ -->
+    <!-- ACT I — VIDEO -->
     <div class="page" id="page-act1-video">
         <div class="section-label">Act I</div>
         <h2 class="section-title">Against All Odds</h2>
@@ -690,111 +684,73 @@
                             <button class="lang-tab" onclick="setLang('t1','zh',this)">中文</button>
                         </div>
                         <div class="transcript-text active" id="t1-en">
-                            Dear Koko,<br>
-                            <br>
-                            Against all odds, we’re still together. Improbable, isn’t it?<br>
-                            <br>
+                            Dear Koko,<br><br>
+                            Against all odds, we're still together. Improbable, isn't it?<br><br>
                             How improbable was it that I—a Chinese-American boy, lost and confused after a recent
-                            breakup—would turn to badminton,
-                            of all things, as a place to rebuild a sense of self and belonging?<br>
-                            <br>
+                            breakup—would turn to badminton, of all things, as a place to rebuild a sense of self and
+                            belonging?<br><br>
                             How improbable was it that you—a girl with a stable, settled life in Mainland China—would
-                            feel the urge to leave your
-                            friends and family behind to start over in the Bay Area?<br>
-                            <br>
+                            feel the urge to leave your friends and family behind to start over in the Bay Area?<br><br>
                             How improbable was it that Kevin happened to be at the gym without a partner, had the
-                            courage to reach out, and started
-                            a badminton social group with me?<br>
-                            <br>
+                            courage to reach out, and started a badminton social group with me?<br><br>
                             And that Kiko would run into you and Pia in the hallway of your enormous apartment complex,
-                            only to invite you to return
-                            to your childhood sport—with us?<br>
-                            <br>
+                            only to invite you to return to your childhood sport—with us?<br><br>
                             We spoke different languages.<br>
                             We grew up in different cultures.<br>
-                            We were at different stages in life.<br>
-                            <br>
-                            And yet—here we are, three years later.<br>
-                            <br>
-                            While other friends have come and gone, we’ve stayed.<br>
+                            We were at different stages in life.<br><br>
+                            And yet—here we are, three years later.<br><br>
+                            While other friends have come and gone, we've stayed.<br>
                             Not by accident, but by choice.<br>
-                            And we’re stronger than ever.<br>
-                            <br>
-                            Improbable, isn’t it?<br>
-                            Maybe not.<br>
-                            <br>
-                            From our very first meeting, we worked to embrace what we shared.<br>
-                            <br>
+                            And we're stronger than ever.<br><br>
+                            Improbable, isn't it?<br>
+                            Maybe not.<br><br>
+                            From our very first meeting, we worked to embrace what we shared.<br><br>
                             We bonded over games—card games, word games, logic puzzles, and very questionable Chinese
                             puns.<br>
                             We explored new interests together: roller skating, tennis, fishing, uni foraging, karaoke,
-                            and of course, the
-                            arcade.<br>
+                            and of course, the arcade.<br>
                             We traveled across the world, from the US Pacific Northwest all the way to the Florida
-                            Everglades, and all the way to
-                            China and back.<br>
-                            <br>
-                            So maybe meeting you felt improbable.<br>
-                            <br>
-                            But staying together hasn’t been about luck.<br>
-                            It’s been about fit—and effort.<br>
-                            <br>
-                            —<br>
-                            <br>
-                            When you’re ready, grab the latex gloves hidden inside the stove, and proceed into the
+                            Everglades, and all the way to China and back.<br><br>
+                            So maybe meeting you felt improbable.<br><br>
+                            But staying together hasn't been about luck.<br>
+                            It's been about fit—and effort.<br><br>
+                            —<br><br>
+                            When you're ready, grab the latex gloves hidden inside the stove, and proceed into the
                             master bedroom.<br>
-                            It’s time to see who the real victims are.<br>
-                            <br>
-                            The truth won’t be about who died,<br>
-                            but about what survived.<br>
+                            It's time to see who the real victims are.<br><br>
+                            The truth won't be about who died,<br>
+                            but about what survived.
                         </div>
                         <div class="transcript-text" id="t1-zh">
-                            亲爱的 Koko，<br>
-                            <br>
-                            在种种几乎不可能的条件下，我们竟然还在一起。听起来很不可思议，对吗？<br>
-                            <br>
-                            一个刚经历分手、迷茫失措的华裔美国男孩，竟然会把羽毛球——偏偏是羽毛球——当作重建自我与归属感的起点，这本身有多么不可思议？<br>
-                            <br>
-                            而你——一个在中国大陆拥有安稳生活的女孩——竟然会萌生离开亲朋好友，远赴湾区重新开始的念头，这又是怎样的小概率事件？<br>
-                            <br>
-                            还有 Kevin。那天他恰好在球馆没有搭档，恰好鼓起勇气主动搭话，恰好和我一起创立了羽毛球社交小组——这样的巧合，概率又有多低？<br>
-                            <br>
-                            再后来，Kiko 在你那栋巨大的公寓楼走廊里，偏偏遇见了你和 Pia，又偏偏邀请你重拾儿时的运动——而且，是和我们一起。这难道不是命运最精妙的安排吗？<br>
-                            <br>
+                            亲爱的 Koko，<br><br>
+                            在种种几乎不可能的条件下，我们竟然还在一起。听起来很不可思议，对吗？<br><br>
+                            一个刚经历分手、迷茫失措的华裔美国男孩，竟然会把羽毛球——偏偏是羽毛球——当作重建自我与归属感的起点，这本身有多么不可思议？<br><br>
+                            而你——一个在中国大陆拥有安稳生活的女孩——竟然会萌生离开亲朋好友，远赴湾区重新开始的念头，这又是怎样的小概率事件？<br><br>
+                            还有 Kevin。那天他恰好在球馆没有搭档，恰好鼓起勇气主动搭话，恰好和我一起创立了羽毛球社交小组——这样的巧合，概率又有多低？<br><br>
+                            再后来，Kiko 在你那栋巨大的公寓楼走廊里，偏偏遇见了你和 Pia，又偏偏邀请你重拾儿时的运动——而且，是和我们一起。这难道不是命运最精妙的安排吗？<br><br>
                             我们说着不同的语言。<br>
                             我们成长于不同的文化。<br>
-                            我们身处人生的不同阶段。<br>
-                            <br>
-                            然而——三年过去了，我们依然在一起。<br>
-                            <br>
+                            我们身处人生的不同阶段。<br><br>
+                            然而——三年过去了，我们依然在一起。<br><br>
                             朋友来来往往，有人出现，也有人离开。<br>
                             但我们留下来了。<br>
                             不是因为偶然，而是因为选择。<br>
-                            而且，比以往任何时候都更加坚定。<br>
-                            <br>
+                            而且，比以往任何时候都更加坚定。<br><br>
                             不可思议，对吗？<br>
-                            也许，并不完全是。<br>
-                            <br>
-                            从第一次见面起，我们就努力去拥抱彼此的相似之处。<br>
-                            <br>
-                            我们因游戏而亲近——纸牌、文字、逻辑谜题，还有那些“质量堪忧”的中文双关语。<br>
+                            也许，并不完全是。<br><br>
+                            从第一次见面起，我们就努力去拥抱彼此的相似之处。<br><br>
+                            我们因游戏而亲近——纸牌、文字、逻辑谜题，还有那些"质量堪忧"的中文双关语。<br>
                             我们一起探索新的兴趣：轮滑、网球、钓鱼、赶海采海胆、卡拉 OK，当然还有街机。<br>
-                            我们一起旅行，从美国太平洋西北一路到佛罗里达大沼泽地，再跨越太平洋到中国，又一起回到美国。<br>
-                            <br>
-                            所以，遇见你或许是概率极低的奇迹。<br>
-                            <br>
+                            我们一起旅行，从美国太平洋西北一路到佛罗里达大沼泽地，再跨越太平洋到中国，又一起回到美国。<br><br>
+                            所以，遇见你或许是概率极低的奇迹。<br><br>
                             但能走到今天，从来不是运气。<br>
                             而是契合。<br>
-                            也是我们一次次主动的选择与付出。<br>
-                            <br>
-                            ——<br>
-                            <br>
-                            当你准备好了，戴上藏在炉子里的乳胶手套，走进主卧。<br>
-                            <br>
-                            是时候揭晓，谁才是真正的“受害者”了。<br>
-                            <br>
+                            也是我们一次次主动的选择与付出。<br><br>
+                            ——<br><br>
+                            当你准备好了，戴上藏在炉子里的乳胶手套，走进主卧。<br><br>
+                            是时候揭晓，谁才是真正的"受害者"了。<br><br>
                             真相，从来不在于谁死去。<br>
-                            而在于，什么得以幸存。<br>
+                            而在于，什么得以幸存。
                         </div>
                     </div>
                 </div>
@@ -802,9 +758,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT II — Q1: Cubes
-══════════════════════════════ -->
+    <!-- ACT II — Q1 -->
     <div class="page" id="page-act2-q1">
         <div class="section-label">Act II · Save the Victims</div>
         <h2 class="section-title">Question I</h2>
@@ -824,9 +778,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT II — Q2: Budget
-══════════════════════════════ -->
+    <!-- ACT II — Q2 -->
     <div class="page" id="page-act2-q2">
         <div class="section-label">Act II · Save the Victims</div>
         <h2 class="section-title">Question II</h2>
@@ -859,16 +811,14 @@
                         oninput="updateBudgetTotal()">
                     <span class="budget-pct">%</span>
                 </div>
-                <div class="budget-total valid" id="budget-total">Total: 100% ✓</div>
+                <div class="budget-total" id="budget-total">Total: 0%</div>
             </div>
             <p class="pw-error" id="q2-error">The allocation must total 100…</p>
             <button class="submit-btn" onclick="checkQ2()">Confirm</button>
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT II — Q3: Health
-══════════════════════════════ -->
+    <!-- ACT II — Q3 -->
     <div class="page" id="page-act2-q3">
         <div class="section-label">Act II · Save the Victims</div>
         <h2 class="section-title">Question III</h2>
@@ -888,9 +838,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT II — Q4: Doubts
-══════════════════════════════ -->
+    <!-- ACT II — Q4 -->
     <div class="page" id="page-act2-q4">
         <div class="section-label">Act II · Save the Victims</div>
         <h2 class="section-title">Question IV</h2>
@@ -910,9 +858,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT II — VIDEO
-══════════════════════════════ -->
+    <!-- ACT II — VIDEO -->
     <div class="page" id="page-act2-video">
         <div class="section-label">Act II</div>
         <h2 class="section-title">Through Every Storm</h2>
@@ -932,90 +878,67 @@
                             <button class="lang-tab" onclick="setLang('t2','zh',this)">中文</button>
                         </div>
                         <div class="transcript-text active" id="t2-en">
-                            Thank you for choosing me—and for continuing to choose me—over these past three years.<br>
-                            <br>
+                            Thank you for choosing me—and for continuing to choose me—over these past three
+                            years.<br><br>
                             When we first met, I was uncertain whether I was truly ready for another relationship.<br>
                             That uncertainty made me hesitant, and at times, I did not treat you with the steadiness you
                             deserved.<br>
                             Yet you met my inconsistency with patience.<br>
                             You gave me space when I needed time to rediscover myself, and when I was finally ready to
-                            commit, you welcomed me
-                            without resentment—only warmth.<br>
-                            <br>
+                            commit, you welcomed me without resentment—only warmth.<br><br>
                             Over the years, my body has had its own challenges: sprained ankles, blood pressure
-                            anxieties, seasonal flus that
-                            overstayed their welcome.<br>
+                            anxieties, seasonal flus that overstayed their welcome.<br>
                             And each time, without hesitation, you stood beside me.<br>
                             You accompanied me to appointments, reassured me when my thoughts spiraled, and once even
-                            pushed me through China in a
-                            wheelchair—never once complaining.<br>
-                            Your care has never been loud, but it has always been unwavering.<br>
-                            <br>
+                            pushed me through China in a wheelchair—never once complaining.<br>
+                            Your care has never been loud, but it has always been unwavering.<br><br>
                             The biggest challenge for both of us continues to be work life balance.<br>
                             Despite our demanding jobs, we have learned to reclaim a small amount of structure for
-                            ourselves—decompressing at the
-                            arcade and playing games, tending to the cats, or simply walking side by side in downtown
-                            Sunnyvale.<br>
-                            In those quiet rituals, we find our way back to each other.<br>
-                            <br>
+                            ourselves—decompressing at the arcade and playing games, tending to the cats, or simply
+                            walking side by side in downtown Sunnyvale.<br>
+                            In those quiet rituals, we find our way back to each other.<br><br>
                             Koko, you are remarkably strong.<br>
                             Through my wavering—my doubts, my stress, my anxieties—you have been the constant.<br>
                             Steady.<br>
                             Grounded.<br>
                             Resolute.<br>
-                            You have not merely endured the turbulence; you have helped steer us through it.<br>
-                            <br>
+                            You have not merely endured the turbulence; you have helped steer us through it.<br><br>
                             Being part of your life has been one of the great privileges of mine.<br>
-                            And I hope that I may remain by your side for many years to come.<br>
-                            <br>
-                            The only question that remains is this:<br>
-                            <br>
-                            Do you want the same?<br>
-                            <br>
-                            Because if you do, then it is time.<br>
-                            <br>
-                            You’ve confronted the doubts and silenced the insecurities.<br>
-                            <br>
+                            And I hope that I may remain by your side for many years to come.<br><br>
+                            The only question that remains is this:<br><br>
+                            Do you want the same?<br><br>
+                            Because if you do, then it is time.<br><br>
+                            You've confronted the doubts and silenced the insecurities.<br><br>
                             So now, there is only one thing left to do.<br>
-                            It’s time to identify the one responsible for tonight’s crimes.<br>
+                            It's time to identify the one responsible for tonight's crimes.
                         </div>
                         <div class="transcript-text" id="t2-zh">
-                            感谢你选择我，也感谢你在过去三年里，一次又一次地继续选择我。<br>
-                            <br>
+                            感谢你选择我，也感谢你在过去三年里，一次又一次地继续选择我。<br><br>
                             我们初次相遇时，我并不确定自己是否真的准备好开始另一段感情。<br>
                             这份犹疑让我踌躇不前，也让你承受了本不该由你承担的动摇与不安。<br>
                             可你却用耐心回应我的反复。<br>
-                            当我需要时间重新找回自己时，你给了我空间；而当我终于准备好坚定地投入时，你没有怨怼，只有温柔地接纳。<br>
-                            <br>
+                            当我需要时间重新找回自己时，你给了我空间；而当我终于准备好坚定地投入时，你没有怨怼，只有温柔地接纳。<br><br>
                             这些年里，我的身体也给我们添过不少麻烦：扭伤的脚踝、血压带来的焦虑、迟迟不退的季节性流感。<br>
                             每一次，你都毫不犹豫地站在我身旁。<br>
                             你陪我看诊，在我胡思乱想时安抚我，甚至有一次在中国推着轮椅带我出行——从未抱怨过一句。<br>
-                            你的关怀从不张扬，却始终坚定。<br>
-                            <br>
+                            你的关怀从不张扬，却始终坚定。<br><br>
                             对我们而言，最大的挑战始终是工作与生活的平衡。<br>
                             尽管事业繁忙，我们依然为彼此保留了一点秩序与空间——去游戏厅放松，打几局游戏；照顾猫咪；或是在桑尼维尔市中心并肩散步。<br>
-                            在那些安静而重复的日常里，我们一次次找回彼此。<br>
-                            <br>
+                            在那些安静而重复的日常里，我们一次次找回彼此。<br><br>
                             可可，你真的很坚强。<br>
                             在我动摇、焦虑、怀疑自己的时候，你始终如一。<br>
                             沉稳。<br>
                             踏实。<br>
                             坚定。<br>
-                            你不仅承受了风浪，更陪我一起掌舵前行。<br>
-                            <br>
+                            你不仅承受了风浪，更陪我一起掌舵前行。<br><br>
                             能够成为你生命的一部分，是我此生最珍贵的荣幸之一。<br>
-                            我希望在未来漫长的岁月里，依然可以站在你身旁。<br>
-                            <br>
-                            唯一剩下的问题是——<br>
-                            <br>
-                            你是否也愿意如此？<br>
-                            <br>
-                            如果答案是肯定的，那么，是时候了。<br>
-                            <br>
-                            你已经直面疑虑，也放下了不安。<br>
-                            <br>
+                            我希望在未来漫长的岁月里，依然可以站在你身旁。<br><br>
+                            唯一剩下的问题是——<br><br>
+                            你是否也愿意如此？<br><br>
+                            如果答案是肯定的，那么，是时候了。<br><br>
+                            你已经直面疑虑，也放下了不安。<br><br>
                             那么现在，只剩下一件事要做了。<br>
-                            是时候找出今晚“案件”的真正主谋。<br>
+                            是时候找出今晚"案件"的真正主谋。
                         </div>
                     </div>
                 </div>
@@ -1023,9 +946,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT III — Q1
-══════════════════════════════ -->
+    <!-- ACT III — Q1 -->
     <div class="page" id="page-act3-q1">
         <div class="section-label">Act III</div>
         <h2 class="section-title">Find the Suspect</h2>
@@ -1043,9 +964,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════
-     ACT III — FINALE
-══════════════════════════════ -->
+    <!-- ACT III — FINALE -->
     <div class="page" id="page-act3-finale">
         <div class="section-label">Act III · Case Closed</div>
         <h2 class="section-title">Find the Suspect</h2>
@@ -1062,11 +981,9 @@
     </div>
 
     <script>
-        // ── CONFIG ────────────────────────────────────────────────────
-        const ACT1_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace
-        const ACT2_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace
+        const ACT1_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+        const ACT2_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
         const PASSWORD = 'Santa Cruz';
-        // ─────────────────────────────────────────────────────────────
 
         // ── PARTICLE SYSTEM ──────────────────────────────────────────
         const canvas = document.getElementById('particle-canvas');
@@ -1200,10 +1117,7 @@
             document.querySelector(`#${id}`).classList.add('active');
             currentPage = id;
             document.getElementById('backBtn').classList.toggle('visible', id !== 'page-home');
-
-            // Fade particles when watching video
             canvas.classList.toggle('dimmed', VIDEO_PAGES.has(id));
-
             if (!skipHistory) history.pushState({ page: id }, '', '#' + id);
         }
 
@@ -1287,7 +1201,6 @@
         function checkQ5() {
             const val = document.getElementById('q5-input').value.trim();
             const err = document.getElementById('q5-error');
-            // Accept any non-empty answer — the real moment is the recognition
             if (val.length > 0) { err.classList.remove('show'); navigate('page-act3-finale'); }
             else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
         }
