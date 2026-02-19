@@ -4,206 +4,1312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three Acts</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>A Mystery in Three Acts</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=UnifrakturMaguntia&family=Josefin+Sans:wght@100;200;300&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080808;
+            --border: #2a2010;
+            --gold: #c9a84c;
+            --gold-dim: #7a5e25;
+            --red: #8b1a1a;
+            --text: #d4c9b0;
+            --text-dim: #7a7060;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.5;
+        }
+
+        /* Vignette */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* ── PAGE SYSTEM ── */
+        .page {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Particle canvas */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 2.5s ease;
+        }
+
+        #particle-canvas.dimmed {
+            opacity: 0;
+        }
+
+        /* ── HOME PAGE ── */
+        .home-eyebrow {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 2s ease forwards;
+        }
+
+        .home-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            color: var(--gold);
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 60px rgba(201, 168, 76, 0.3), 0 0 120px rgba(201, 168, 76, 0.1);
+            animation: fadeUp 2s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        .home-subtitle {
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+            margin-bottom: 4rem;
+            animation: fadeUp 2s ease 0.6s forwards;
+            opacity: 0;
+        }
+
+        .act-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            animation: fadeUp 2s ease 0.9s forwards;
+            opacity: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .act-btn {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            padding: 1.1rem 2rem;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .act-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+            z-index: -1;
+        }
+
+        .act-btn:hover {
+            color: var(--bg);
+            border-color: var(--gold);
+            box-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+        }
+
+        .act-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .divider {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+            flex-shrink: 0;
+        }
+
+        /* ── SECTION LABEL + TITLE (modern / Josefin Sans) ── */
+        .section-label {
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 100;
+            letter-spacing: 0.55em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 100;
+            font-size: clamp(1.5rem, 3.5vw, 2.8rem);
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+            margin-bottom: 2.5rem;
+        }
+
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold-dim);
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 200;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 200;
+            display: none;
+            text-transform: uppercase;
+        }
+
+        .back-btn:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(201, 168, 76, 0.15);
+        }
+
+        .back-btn.visible {
+            display: block;
+        }
+
+        /* ── FORM CONTAINERS ── */
+        .password-wrap,
+        .act2-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            max-width: 460px;
+            width: 100%;
+        }
+
+        .mystery-text {
+            font-style: italic;
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.9;
+        }
+
+        .question-text {
+            text-align: center;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ── INPUTS ── */
+        .pw-input,
+        .answer-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.25em;
+            padding: 0.8rem 1.2rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .pw-input:focus,
+        .answer-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(201, 168, 76, 0.1);
+        }
+
+        .pw-input::placeholder,
+        .answer-input::placeholder {
+            color: var(--text-dim);
+            font-style: italic;
+            letter-spacing: 0.15em;
+        }
+
+        .pw-error {
+            color: var(--red);
+            font-style: italic;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: center;
+        }
+
+        .pw-error.show {
+            opacity: 1;
+        }
+
+        /* ── SUBMIT BUTTON ── */
+        .submit-btn {
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 200;
+            font-size: 0.62rem;
+            letter-spacing: 0.38em;
+            text-transform: uppercase;
+            padding: 0.8rem 2.2rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+            z-index: -1;
+        }
+
+        .submit-btn:hover {
+            color: var(--bg);
+            border-color: var(--gold);
+        }
+
+        .submit-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* ── VIDEO PAGES ── */
+        .video-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 820px;
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border: 1px solid var(--border);
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Transcript */
+        .transcript-wrap {
+            width: 100%;
+        }
+
+        .transcript-header {
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 0.7rem 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .transcript-header:hover {
+            border-color: var(--gold-dim);
+        }
+
+        .transcript-header span:first-child {
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 100;
+            font-size: 0.6rem;
+            letter-spacing: 0.42em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+        }
+
+        .transcript-toggle {
+            color: var(--gold-dim);
+            font-size: 1rem;
+        }
+
+        .transcript-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease;
+            border: 1px solid var(--border);
+            border-top: none;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .transcript-body.open {
+            max-height: 420px;
+        }
+
+        .transcript-inner {
+            padding: 1.2rem;
+        }
+
+        .transcript-lang-tabs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .lang-tab {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 200;
+            font-size: 0.62rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-tab.active {
+            border-color: var(--gold-dim);
+            color: var(--gold);
+        }
+
+        .transcript-text {
+            font-style: italic;
+            line-height: 1.9;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            display: none;
+            overflow-y: auto;
+            max-height: 280px;
+        }
+
+        .transcript-text.active {
+            display: block;
+        }
+
+        /* ── PROGRESS DOTS ── */
+        .progress-dots {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background 0.4s;
+        }
+
+        .dot.done {
+            background: var(--gold-dim);
+        }
+
+        .dot.current {
+            background: var(--gold);
+        }
+
+        /* ── BUDGET FORM ── */
+        .budget-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .budget-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .budget-label {
+            flex: 1;
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 100;
+            font-size: 0.62rem;
+            letter-spacing: 0.3em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .budget-input {
+            width: 80px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            padding: 0.5rem 0.6rem;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .budget-input:focus {
+            border-color: var(--gold);
+        }
+
+        .budget-pct {
+            color: var(--gold-dim);
+            font-size: 0.9rem;
+        }
+
+        .budget-total {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .budget-total.valid {
+            color: var(--gold-dim);
+        }
+
+        .budget-total.invalid {
+            color: var(--red);
+        }
+
+        .budget-total.leisure-warning {
+            color: #a07830;
+            font-style: italic;
+        }
+
+        /* ── ACT III FINALE ── */
+        .finale-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            max-width: 520px;
+            text-align: center;
+        }
+
+        .finale-door {
+            font-size: clamp(4rem, 12vw, 8rem);
+            line-height: 1;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.2));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 60px rgba(201, 168, 76, 0.7));
+            }
+        }
+
+        .finale-message {
+            font-size: 1.25rem;
+            font-style: italic;
+            color: var(--text);
+            line-height: 1.9;
+        }
+
+        .finale-sub {
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 100;
+            font-size: 0.62rem;
+            letter-spacing: 0.5em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+        }
+
+        /* ── ORNAMENT LINE ── */
+        .ornament {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 360px;
+            color: var(--gold-dim);
+            font-size: 0.6rem;
+        }
+
+        .ornament::before,
+        .ornament::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dim);
+        }
+    </style>
 </head>
 
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const ChevronLeft = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-        );
+    <canvas id="particle-canvas"></canvas>
+    <button class="back-btn" id="backBtn" onclick="goHome()">← Return</button>
 
-        const App = () => {
-            const [currentView, setCurrentView] = useState('home');
-            const [selectedAct, setSelectedAct] = useState(null);
+    <!-- ══════════════════════════════
+     HOME
+══════════════════════════════ -->
+    <div class="page active" id="page-home">
+        <div class="home-eyebrow">A Mystery in Three Acts</div>
+        <h1 class="home-title">Before I Choose You</h1>
+        <p class="home-subtitle">Seek the truth between the walls</p>
+        <div class="act-buttons">
+            <button class="act-btn" onclick="navigate('page-act1-password')">Act I</button>
+            <div class="divider"></div>
+            <button class="act-btn" onclick="navigate('page-act2-q1')">Act II</button>
+            <div class="divider"></div>
+            <button class="act-btn" onclick="navigate('page-act3-q1')">Act III</button>
+        </div>
+    </div>
 
-            // Act configurations
-            const acts = {
-                1: {
-                    title: 'Act I',
-                    password: 'genesis',
-                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
-                    description: 'The Beginning'
-                },
-                2: {
-                    title: 'Act II',
-                    password: 'metamorphosis',
-                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
-                    description: 'The Transformation'
-                },
-                3: {
-                    title: 'Act III',
-                    password: 'revelation',
-                    videoId: 'dQw4w9WgXcQ', // Replace with your YouTube video ID
-                    description: 'The Culmination'
-                }
-            };
+    <!-- ══════════════════════════════
+     ACT I — PASSWORD
+══════════════════════════════ -->
+    <div class="page" id="page-act1-password">
+        <div class="section-label">Act I</div>
+        <h2 class="section-title">Identify the Suspect</h2>
+        <div class="password-wrap">
+            <p class="mystery-text">
+                A photograph lies before you — incomplete.<br>
+                Somewhere in its fragments hides the suspect.<br><br>
+                To reveal them, speak the name of the place<br>where it all began.
+            </p>
+            <div class="ornament">✦</div>
+            <input class="pw-input" id="pw-input" placeholder="Where was the photo taken..."
+                onkeydown="if(event.key==='Enter')checkPassword()">
+            <p class="pw-error" id="pw-error">Hint: Where was the photo taken? It has a boardwalk...</p>
+            <button class="submit-btn" onclick="checkPassword()">Unlock</button>
+        </div>
+    </div>
 
-            // Check URL parameters on mount and when URL changes
-            useEffect(() => {
-                const params = new URLSearchParams(window.location.search);
-                const actParam = params.get('act');
-                const passwordParam = params.get('password');
+    <!-- ══════════════════════════════
+     ACT I — VIDEO
+══════════════════════════════ -->
+    <div class="page" id="page-act1-video">
+        <div class="section-label">Act I</div>
+        <h2 class="section-title">Against All Odds</h2>
+        <div class="video-wrap">
+            <div class="video-container">
+                <iframe id="act1-iframe" src="" allowfullscreen></iframe>
+            </div>
+            <div class="transcript-wrap">
+                <div class="transcript-header" onclick="toggleTranscript('t1')">
+                    <span>View Transcript</span>
+                    <span class="transcript-toggle" id="t1-icon">▾</span>
+                </div>
+                <div class="transcript-body" id="t1-body">
+                    <div class="transcript-inner">
+                        <div class="transcript-lang-tabs">
+                            <button class="lang-tab active" onclick="setLang('t1','en',this)">English</button>
+                            <button class="lang-tab" onclick="setLang('t1','zh',this)">中文</button>
+                        </div>
+                        <div class="transcript-text active" id="t1-en">
+                            Dear Koko,<br>
+                            <br>
+                            Against all odds, we’re still together. Improbable, isn’t it?<br>
+                            <br>
+                            How improbable was it that I—a Chinese-American boy, lost and confused after a recent
+                            breakup—would turn to badminton,
+                            of all things, as a place to rebuild a sense of self and belonging?<br>
+                            <br>
+                            How improbable was it that you—a girl with a stable, settled life in Mainland China—would
+                            feel the urge to leave your
+                            friends and family behind to start over in the Bay Area?<br>
+                            <br>
+                            How improbable was it that Kevin happened to be at the gym without a partner, had the
+                            courage to reach out, and started
+                            a badminton social group with me?<br>
+                            <br>
+                            And that Kiko would run into you and Pia in the hallway of your enormous apartment complex,
+                            only to invite you to return
+                            to your childhood sport—with us?<br>
+                            <br>
+                            We spoke different languages.<br>
+                            We grew up in different cultures.<br>
+                            We were at different stages in life.<br>
+                            <br>
+                            And yet—here we are, three years later.<br>
+                            <br>
+                            While other friends have come and gone, we’ve stayed.<br>
+                            Not by accident, but by choice.<br>
+                            And we’re stronger than ever.<br>
+                            <br>
+                            Improbable, isn’t it?<br>
+                            Maybe not.<br>
+                            <br>
+                            From our very first meeting, we worked to embrace what we shared.<br>
+                            <br>
+                            We bonded over games—card games, word games, logic puzzles, and very questionable Chinese
+                            puns.<br>
+                            We explored new interests together: roller skating, tennis, fishing, uni foraging, karaoke,
+                            and of course, the
+                            arcade.<br>
+                            We traveled across the world, from the US Pacific Northwest all the way to the Florida
+                            Everglades, and all the way to
+                            China and back.<br>
+                            <br>
+                            So maybe meeting you felt improbable.<br>
+                            <br>
+                            But staying together hasn’t been about luck.<br>
+                            It’s been about fit—and effort.<br>
+                            <br>
+                            —<br>
+                            <br>
+                            When you’re ready, grab the latex gloves hidden inside the stove, and proceed into the
+                            master bedroom.<br>
+                            It’s time to see who the real victims are.<br>
+                            <br>
+                            The truth won’t be about who died,<br>
+                            but about what survived.<br>
+                        </div>
+                        <div class="transcript-text" id="t1-zh">
+                            亲爱的 Koko，<br>
+                            <br>
+                            在种种几乎不可能的条件下，我们竟然还在一起。听起来很不可思议，对吗？<br>
+                            <br>
+                            一个刚经历分手、迷茫失措的华裔美国男孩，竟然会把羽毛球——偏偏是羽毛球——当作重建自我与归属感的起点，这本身有多么不可思议？<br>
+                            <br>
+                            而你——一个在中国大陆拥有安稳生活的女孩——竟然会萌生离开亲朋好友，远赴湾区重新开始的念头，这又是怎样的小概率事件？<br>
+                            <br>
+                            还有 Kevin。那天他恰好在球馆没有搭档，恰好鼓起勇气主动搭话，恰好和我一起创立了羽毛球社交小组——这样的巧合，概率又有多低？<br>
+                            <br>
+                            再后来，Kiko 在你那栋巨大的公寓楼走廊里，偏偏遇见了你和 Pia，又偏偏邀请你重拾儿时的运动——而且，是和我们一起。这难道不是命运最精妙的安排吗？<br>
+                            <br>
+                            我们说着不同的语言。<br>
+                            我们成长于不同的文化。<br>
+                            我们身处人生的不同阶段。<br>
+                            <br>
+                            然而——三年过去了，我们依然在一起。<br>
+                            <br>
+                            朋友来来往往，有人出现，也有人离开。<br>
+                            但我们留下来了。<br>
+                            不是因为偶然，而是因为选择。<br>
+                            而且，比以往任何时候都更加坚定。<br>
+                            <br>
+                            不可思议，对吗？<br>
+                            也许，并不完全是。<br>
+                            <br>
+                            从第一次见面起，我们就努力去拥抱彼此的相似之处。<br>
+                            <br>
+                            我们因游戏而亲近——纸牌、文字、逻辑谜题，还有那些“质量堪忧”的中文双关语。<br>
+                            我们一起探索新的兴趣：轮滑、网球、钓鱼、赶海采海胆、卡拉 OK，当然还有街机。<br>
+                            我们一起旅行，从美国太平洋西北一路到佛罗里达大沼泽地，再跨越太平洋到中国，又一起回到美国。<br>
+                            <br>
+                            所以，遇见你或许是概率极低的奇迹。<br>
+                            <br>
+                            但能走到今天，从来不是运气。<br>
+                            而是契合。<br>
+                            也是我们一次次主动的选择与付出。<br>
+                            <br>
+                            ——<br>
+                            <br>
+                            当你准备好了，戴上藏在炉子里的乳胶手套，走进主卧。<br>
+                            <br>
+                            是时候揭晓，谁才是真正的“受害者”了。<br>
+                            <br>
+                            真相，从来不在于谁死去。<br>
+                            而在于，什么得以幸存。<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                if (actParam && passwordParam) {
-                    const actNumber = parseInt(actParam);
-                    if (acts[actNumber] && acts[actNumber].password === passwordParam) {
-                        setSelectedAct(actNumber);
-                        setCurrentView('video');
+    <!-- ══════════════════════════════
+     ACT II — Q1: Cubes
+══════════════════════════════ -->
+    <div class="page" id="page-act2-q1">
+        <div class="section-label">Act II · Save the Victims</div>
+        <h2 class="section-title">Question I</h2>
+        <div class="progress-dots">
+            <div class="dot current"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="act2-wrap">
+            <p class="question-text">How many cubes were there in the Big Brain Academy game?</p>
+            <div class="ornament">✦</div>
+            <input class="answer-input" id="q1-input" type="number" placeholder="Enter a number..."
+                onkeydown="if(event.key==='Enter')checkQ1()">
+            <p class="pw-error" id="q1-error">Hint: It's 20...minus 1...</p>
+            <button class="submit-btn" onclick="checkQ1()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT II — Q2: Budget
+══════════════════════════════ -->
+    <div class="page" id="page-act2-q2">
+        <div class="section-label">Act II · Save the Victims</div>
+        <h2 class="section-title">Question II</h2>
+        <div class="progress-dots">
+            <div class="dot done"></div>
+            <div class="dot current"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="act2-wrap">
+            <p class="question-text">What is your spending budget allocation?<br><em
+                    style="font-size:0.85rem;color:var(--text-dim)">The three dimensions must sum to 100%</em></p>
+            <div class="ornament">✦</div>
+            <div class="budget-form">
+                <div class="budget-row">
+                    <span class="budget-label">Fixed Costs</span>
+                    <input class="budget-input" id="b-fixed" type="number" min="0" max="100" value="0"
+                        oninput="updateBudgetTotal()">
+                    <span class="budget-pct">%</span>
+                </div>
+                <div class="budget-row">
+                    <span class="budget-label">Savings</span>
+                    <input class="budget-input" id="b-savings" type="number" min="0" max="100" value="0"
+                        oninput="updateBudgetTotal()">
+                    <span class="budget-pct">%</span>
+                </div>
+                <div class="budget-row">
+                    <span class="budget-label">Leisure</span>
+                    <input class="budget-input" id="b-leisure" type="number" min="0" max="100" value="0"
+                        oninput="updateBudgetTotal()">
+                    <span class="budget-pct">%</span>
+                </div>
+                <div class="budget-total valid" id="budget-total">Total: 100% ✓</div>
+            </div>
+            <p class="pw-error" id="q2-error">The allocation must total 100…</p>
+            <button class="submit-btn" onclick="checkQ2()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT II — Q3: Health
+══════════════════════════════ -->
+    <div class="page" id="page-act2-q3">
+        <div class="section-label">Act II · Save the Victims</div>
+        <h2 class="section-title">Question III</h2>
+        <div class="progress-dots">
+            <div class="dot done"></div>
+            <div class="dot done"></div>
+            <div class="dot current"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="act2-wrap">
+            <p class="question-text">What should we eat to cure health problems?</p>
+            <div class="ornament">✦</div>
+            <input class="answer-input" id="q3-input" type="text" placeholder="Enter the food…"
+                onkeydown="if(event.key==='Enter')checkQ3()">
+            <p class="pw-error" id="q3-error">Think "healthy"...</p>
+            <button class="submit-btn" onclick="checkQ3()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT II — Q4: Doubts
+══════════════════════════════ -->
+    <div class="page" id="page-act2-q4">
+        <div class="section-label">Act II · Save the Victims</div>
+        <h2 class="section-title">Question IV</h2>
+        <div class="progress-dots">
+            <div class="dot done"></div>
+            <div class="dot done"></div>
+            <div class="dot done"></div>
+            <div class="dot current"></div>
+        </div>
+        <div class="act2-wrap">
+            <p class="question-text">What is the cure for doubts and insecurities?</p>
+            <div class="ornament">✦</div>
+            <input class="answer-input" id="q4-input" type="text" placeholder="your answer…"
+                onkeydown="if(event.key==='Enter')checkQ4()">
+            <p class="pw-error" id="q4-error">Look for the needle in the plushie haystack…</p>
+            <button class="submit-btn" onclick="checkQ4()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT II — VIDEO
+══════════════════════════════ -->
+    <div class="page" id="page-act2-video">
+        <div class="section-label">Act II</div>
+        <h2 class="section-title">Through Every Storm</h2>
+        <div class="video-wrap">
+            <div class="video-container">
+                <iframe id="act2-iframe" src="" allowfullscreen></iframe>
+            </div>
+            <div class="transcript-wrap">
+                <div class="transcript-header" onclick="toggleTranscript('t2')">
+                    <span>View Transcript</span>
+                    <span class="transcript-toggle" id="t2-icon">▾</span>
+                </div>
+                <div class="transcript-body" id="t2-body">
+                    <div class="transcript-inner">
+                        <div class="transcript-lang-tabs">
+                            <button class="lang-tab active" onclick="setLang('t2','en',this)">English</button>
+                            <button class="lang-tab" onclick="setLang('t2','zh',this)">中文</button>
+                        </div>
+                        <div class="transcript-text active" id="t2-en">
+                            Thank you for choosing me—and for continuing to choose me—over these past three years.<br>
+                            <br>
+                            When we first met, I was uncertain whether I was truly ready for another relationship.<br>
+                            That uncertainty made me hesitant, and at times, I did not treat you with the steadiness you
+                            deserved.<br>
+                            Yet you met my inconsistency with patience.<br>
+                            You gave me space when I needed time to rediscover myself, and when I was finally ready to
+                            commit, you welcomed me
+                            without resentment—only warmth.<br>
+                            <br>
+                            Over the years, my body has had its own challenges: sprained ankles, blood pressure
+                            anxieties, seasonal flus that
+                            overstayed their welcome.<br>
+                            And each time, without hesitation, you stood beside me.<br>
+                            You accompanied me to appointments, reassured me when my thoughts spiraled, and once even
+                            pushed me through China in a
+                            wheelchair—never once complaining.<br>
+                            Your care has never been loud, but it has always been unwavering.<br>
+                            <br>
+                            The biggest challenge for both of us continues to be work life balance.<br>
+                            Despite our demanding jobs, we have learned to reclaim a small amount of structure for
+                            ourselves—decompressing at the
+                            arcade and playing games, tending to the cats, or simply walking side by side in downtown
+                            Sunnyvale.<br>
+                            In those quiet rituals, we find our way back to each other.<br>
+                            <br>
+                            Koko, you are remarkably strong.<br>
+                            Through my wavering—my doubts, my stress, my anxieties—you have been the constant.<br>
+                            Steady.<br>
+                            Grounded.<br>
+                            Resolute.<br>
+                            You have not merely endured the turbulence; you have helped steer us through it.<br>
+                            <br>
+                            Being part of your life has been one of the great privileges of mine.<br>
+                            And I hope that I may remain by your side for many years to come.<br>
+                            <br>
+                            The only question that remains is this:<br>
+                            <br>
+                            Do you want the same?<br>
+                            <br>
+                            Because if you do, then it is time.<br>
+                            <br>
+                            You’ve confronted the doubts and silenced the insecurities.<br>
+                            <br>
+                            So now, there is only one thing left to do.<br>
+                            It’s time to identify the one responsible for tonight’s crimes.<br>
+                        </div>
+                        <div class="transcript-text" id="t2-zh">
+                            感谢你选择我，也感谢你在过去三年里，一次又一次地继续选择我。<br>
+                            <br>
+                            我们初次相遇时，我并不确定自己是否真的准备好开始另一段感情。<br>
+                            这份犹疑让我踌躇不前，也让你承受了本不该由你承担的动摇与不安。<br>
+                            可你却用耐心回应我的反复。<br>
+                            当我需要时间重新找回自己时，你给了我空间；而当我终于准备好坚定地投入时，你没有怨怼，只有温柔地接纳。<br>
+                            <br>
+                            这些年里，我的身体也给我们添过不少麻烦：扭伤的脚踝、血压带来的焦虑、迟迟不退的季节性流感。<br>
+                            每一次，你都毫不犹豫地站在我身旁。<br>
+                            你陪我看诊，在我胡思乱想时安抚我，甚至有一次在中国推着轮椅带我出行——从未抱怨过一句。<br>
+                            你的关怀从不张扬，却始终坚定。<br>
+                            <br>
+                            对我们而言，最大的挑战始终是工作与生活的平衡。<br>
+                            尽管事业繁忙，我们依然为彼此保留了一点秩序与空间——去游戏厅放松，打几局游戏；照顾猫咪；或是在桑尼维尔市中心并肩散步。<br>
+                            在那些安静而重复的日常里，我们一次次找回彼此。<br>
+                            <br>
+                            可可，你真的很坚强。<br>
+                            在我动摇、焦虑、怀疑自己的时候，你始终如一。<br>
+                            沉稳。<br>
+                            踏实。<br>
+                            坚定。<br>
+                            你不仅承受了风浪，更陪我一起掌舵前行。<br>
+                            <br>
+                            能够成为你生命的一部分，是我此生最珍贵的荣幸之一。<br>
+                            我希望在未来漫长的岁月里，依然可以站在你身旁。<br>
+                            <br>
+                            唯一剩下的问题是——<br>
+                            <br>
+                            你是否也愿意如此？<br>
+                            <br>
+                            如果答案是肯定的，那么，是时候了。<br>
+                            <br>
+                            你已经直面疑虑，也放下了不安。<br>
+                            <br>
+                            那么现在，只剩下一件事要做了。<br>
+                            是时候找出今晚“案件”的真正主谋。<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT III — Q1
+══════════════════════════════ -->
+    <div class="page" id="page-act3-q1">
+        <div class="section-label">Act III</div>
+        <h2 class="section-title">Find the Suspect</h2>
+        <div class="act2-wrap">
+            <p class="question-text">
+                The evidence has been gathered.<br>
+                The witnesses have spoken.<br><br>
+                <em>Who is the one who has been with you<br>through everything — all along?</em>
+            </p>
+            <div class="ornament">✦</div>
+            <input class="answer-input" id="q5-input" type="text" placeholder="name the suspect…"
+                onkeydown="if(event.key==='Enter')checkQ5()">
+            <p class="pw-error" id="q5-error">Look closer. The answer is right before you.</p>
+            <button class="submit-btn" onclick="checkQ5()">Reveal</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     ACT III — FINALE
+══════════════════════════════ -->
+    <div class="page" id="page-act3-finale">
+        <div class="section-label">Act III · Case Closed</div>
+        <h2 class="section-title">Find the Suspect</h2>
+        <div class="finale-wrap">
+            <div class="finale-door">🚪</div>
+            <p class="finale-message">
+                The mystery has been solved.<br>
+                The suspect has been found.<br><br>
+                You may now open the final door.
+            </p>
+            <div class="ornament">✦</div>
+            <p class="finale-sub">The truth was always here</p>
+        </div>
+    </div>
+
+    <script>
+        // ── CONFIG ────────────────────────────────────────────────────
+        const ACT1_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace
+        const ACT2_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace
+        const PASSWORD = 'Santa Cruz';
+        // ─────────────────────────────────────────────────────────────
+
+        // ── PARTICLE SYSTEM ──────────────────────────────────────────
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const particles = [];
+        const EMBER_COLORS = ['#c9a84c', '#e8c96a', '#a07030', '#f0d080', '#8b5e20'];
+        const STEAM_COLORS = ['rgba(180,160,100', 'rgba(120,100,60', 'rgba(200,180,120'];
+
+        function spawnEmber() {
+            particles.push({
+                type: 'ember',
+                x: Math.random() * canvas.width,
+                y: canvas.height + 10,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: -(0.5 + Math.random() * 1.4),
+                size: 1 + Math.random() * 2.5,
+                color: EMBER_COLORS[Math.floor(Math.random() * EMBER_COLORS.length)],
+                alpha: 0, maxAlpha: 0.5 + Math.random() * 0.5,
+                life: 0, maxLife: 200 + Math.random() * 400,
+                flicker: Math.random() * Math.PI * 2,
+                flickerSpeed: 0.04 + Math.random() * 0.08,
+                trail: [], trailLen: Math.floor(8 + Math.random() * 20),
+            });
+        }
+
+        function spawnSteamPuff() {
+            const base = STEAM_COLORS[Math.floor(Math.random() * STEAM_COLORS.length)];
+            particles.push({
+                type: 'steam',
+                x: Math.random() * canvas.width,
+                y: canvas.height * (0.5 + Math.random() * 0.5),
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: -(0.3 + Math.random() * 0.7),
+                size: 8 + Math.random() * 18,
+                growRate: 0.08 + Math.random() * 0.12,
+                color: base,
+                alpha: 0, maxAlpha: 0.07 + Math.random() * 0.1,
+                life: 0, maxLife: 300 + Math.random() * 500,
+            });
+        }
+
+        let lastEmberTime = 0, lastSteamTime = 0;
+        const EMBER_INTERVAL = 80, STEAM_INTERVAL = 220;
+        const MAX_EMBERS = 90, MAX_STEAM = 28;
+
+        function updateParticles(ts) {
+            if (ts - lastEmberTime > EMBER_INTERVAL && particles.filter(p => p.type === 'ember').length < MAX_EMBERS) {
+                spawnEmber(); lastEmberTime = ts;
+            }
+            if (ts - lastSteamTime > STEAM_INTERVAL && particles.filter(p => p.type === 'steam').length < MAX_STEAM) {
+                spawnSteamPuff(); lastSteamTime = ts;
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.life++;
+                const fadeIn = Math.min(p.life / 40, 1);
+                const fadeOut = 1 - Math.max((p.life - p.maxLife * 0.7) / (p.maxLife * 0.3), 0);
+
+                if (p.type === 'ember') {
+                    p.flicker += p.flickerSpeed;
+                    p.vx += Math.sin(p.flicker) * 0.008;
+                    p.x += p.vx; p.y += p.vy;
+                    p.alpha = p.maxAlpha * fadeIn * fadeOut * (0.85 + 0.15 * Math.sin(p.flicker * 3));
+
+                    p.trail.push({ x: p.x, y: p.y, alpha: p.alpha });
+                    if (p.trail.length > p.trailLen) p.trail.shift();
+
+                    for (let t = 0; t < p.trail.length; t++) {
+                        const tp = p.trail[t], tf = t / p.trail.length;
+                        const tr = p.size * (0.3 + tf * 0.7) * (1 + tf * 3);
+                        const sg = ctx.createRadialGradient(tp.x, tp.y, 0, tp.x, tp.y, tr * 2.5);
+                        sg.addColorStop(0, `rgba(160,130,60,${tp.alpha * tf * 0.35})`);
+                        sg.addColorStop(0.4, `rgba(100,80,30,${tp.alpha * tf * 0.12})`);
+                        sg.addColorStop(1, `rgba(60,40,10,0)`);
+                        ctx.beginPath(); ctx.arc(tp.x, tp.y, tr * 2.5, 0, Math.PI * 2);
+                        ctx.fillStyle = sg; ctx.fill();
+                    }
+
+                    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5);
+                    glow.addColorStop(0, `rgba(255,220,100,${p.alpha * 0.9})`);
+                    glow.addColorStop(0.3, `rgba(200,150,50,${p.alpha * 0.4})`);
+                    glow.addColorStop(1, 'rgba(100,60,0,0)');
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 5, 0, Math.PI * 2);
+                    ctx.fillStyle = glow; ctx.fill();
+
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
+                    ctx.fill(); ctx.globalAlpha = 1;
+
+                } else if (p.type === 'steam') {
+                    p.x += p.vx; p.y += p.vy;
+                    p.vx += (Math.random() - 0.5) * 0.02;
+                    p.size += p.growRate;
+                    p.alpha = p.maxAlpha * fadeIn * fadeOut;
+
+                    for (let layer = 3; layer >= 0; layer--) {
+                        const lr = p.size * (0.4 + layer * 0.25);
+                        const la = p.alpha * (1 - layer * 0.22);
+                        const sg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, lr);
+                        sg.addColorStop(0, `${p.color},${la})`);
+                        sg.addColorStop(0.5, `${p.color},${la * 0.5})`);
+                        sg.addColorStop(1, `${p.color},0)`);
+                        ctx.beginPath(); ctx.arc(p.x, p.y, lr, 0, Math.PI * 2);
+                        ctx.fillStyle = sg; ctx.fill();
                     }
                 }
-            }, []);
 
-            const handleActSelect = (actNumber) => {
-                setSelectedAct(actNumber);
-                setCurrentView('password');
-            };
+                if (p.life >= p.maxLife) particles.splice(i, 1);
+            }
+        }
 
-            const handlePasswordSubmit = (e) => {
-                e.preventDefault();
-                const password = e.target.password.value;
+        function loop(ts) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateParticles(ts);
+            requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
 
-                if (acts[selectedAct].password === password) {
-                    // Update URL with password parameter
-                    const newUrl = `${window.location.pathname}?act=${selectedAct}&password=${password}`;
-                    window.history.pushState({}, '', newUrl);
-                    setCurrentView('video');
+        // ── NAVIGATION ───────────────────────────────────────────────
+        const VIDEO_PAGES = new Set(['page-act1-video', 'page-act2-video']);
+        let currentPage = 'page-home';
+
+        function navigate(id, skipHistory = false) {
+            document.querySelector(`#${currentPage}`).classList.remove('active');
+            document.querySelector(`#${id}`).classList.add('active');
+            currentPage = id;
+            document.getElementById('backBtn').classList.toggle('visible', id !== 'page-home');
+
+            // Fade particles when watching video
+            canvas.classList.toggle('dimmed', VIDEO_PAGES.has(id));
+
+            if (!skipHistory) history.pushState({ page: id }, '', '#' + id);
+        }
+
+        window.addEventListener('popstate', e => navigate(e.state?.page || 'page-home', true));
+
+        function goHome() {
+            navigate('page-home');
+            document.getElementById('act1-iframe').src = '';
+            document.getElementById('act2-iframe').src = '';
+        }
+
+        // ── ACT I ────────────────────────────────────────────────────
+        function checkPassword() {
+            const val = document.getElementById('pw-input').value;
+            const err = document.getElementById('pw-error');
+            if (val.trim().toLowerCase() === PASSWORD.toLowerCase()) {
+                err.classList.remove('show');
+                document.getElementById('act1-iframe').src = ACT1_VIDEO;
+                navigate('page-act1-video');
+            } else {
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 2500);
+            }
+        }
+
+        // ── ACT II ───────────────────────────────────────────────────
+        function checkQ1() {
+            const val = parseInt(document.getElementById('q1-input').value, 10);
+            const err = document.getElementById('q1-error');
+            if (val === 19) { err.classList.remove('show'); navigate('page-act2-q2'); }
+            else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
+        }
+
+        function updateBudgetTotal() {
+            const f = parseFloat(document.getElementById('b-fixed').value) || 0;
+            const s = parseFloat(document.getElementById('b-savings').value) || 0;
+            const l = parseFloat(document.getElementById('b-leisure').value) || 0;
+            const total = f + s + l;
+            const el = document.getElementById('budget-total');
+            if (Math.round(total) === 100) {
+                if (l >= 20) {
+                    el.textContent = `Total: ${total}% ✓  —  ${l}% on leisure… perhaps that could shrink a little?`;
+                    el.className = 'budget-total leisure-warning';
                 } else {
-                    alert('Incorrect password. Try again.');
-                    e.target.password.value = '';
+                    el.textContent = `Total: ${total}% ✓`;
+                    el.className = 'budget-total valid';
                 }
-            };
-
-            const handleBackToHome = () => {
-                setCurrentView('home');
-                setSelectedAct(null);
-                window.history.pushState({}, '', window.location.pathname);
-            };
-
-            // Home View
-            if (currentView === 'home') {
-                return (
-                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
-                        <div className="max-w-2xl w-full">
-                            <h1 className="text-6xl font-light text-center mb-4 tracking-wider">
-                                THREE ACTS
-                            </h1>
-                            <p className="text-gray-500 text-center mb-16 tracking-wide">
-                                Choose your journey
-                            </p>
-
-                            <div className="space-y-6">
-                                {[1, 2, 3].map((actNumber) => (
-                                    <button
-                                        key={actNumber}
-                                        onClick={() => handleActSelect(actNumber)}
-                                        className="w-full bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 transition-all duration-300 py-6 px-8 rounded-lg group"
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div className="text-left">
-                                                <h2 className="text-2xl font-light mb-1">
-                                                    {acts[actNumber].title}
-                                                </h2>
-                                                <p className="text-gray-500 text-sm">
-                                                    {acts[actNumber].description}
-                                                </p>
-                                            </div>
-                                            <div className="text-4xl font-thin text-gray-700 group-hover:text-gray-500 transition-colors">
-                                                →
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                );
+            } else {
+                el.textContent = `Total: ${total}%`;
+                el.className = 'budget-total invalid';
             }
+        }
 
-            // Password View
-            if (currentView === 'password') {
-                return (
-                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
-                        <div className="max-w-md w-full">
-                            <button
-                                onClick={handleBackToHome}
-                                className="mb-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2"
-                            >
-                                <ChevronLeft size={20} />
-                                <span>Back</span>
-                            </button>
+        function checkQ2() {
+            const f = parseFloat(document.getElementById('b-fixed').value) || 0;
+            const s = parseFloat(document.getElementById('b-savings').value) || 0;
+            const l = parseFloat(document.getElementById('b-leisure').value) || 0;
+            const err = document.getElementById('q2-error');
+            if (Math.round(f + s + l) === 100) { err.classList.remove('show'); navigate('page-act2-q3'); }
+            else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
+        }
 
-                            <h1 className="text-4xl font-light mb-2 tracking-wider">
-                                {acts[selectedAct].title}
-                            </h1>
-                            <p className="text-gray-500 mb-12">
-                                Enter the password to proceed
-                            </p>
+        function checkQ3() {
+            const val = document.getElementById('q3-input').value.trim().toLowerCase();
+            const err = document.getElementById('q3-error');
+            if (val === 'vegetables' || val === 'vegetable') { err.classList.remove('show'); navigate('page-act2-q4'); }
+            else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
+        }
 
-                            <form onSubmit={handlePasswordSubmit}>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    autoFocus
-                                    className="w-full bg-gray-900 border border-gray-800 focus:border-gray-600 outline-none px-6 py-4 rounded-lg text-lg mb-6 transition-colors"
-                                />
-                                <button
-                                    type="submit"
-                                    className="w-full bg-white text-black hover:bg-gray-200 transition-colors py-4 rounded-lg font-medium tracking-wide"
-                                >
-                                    ENTER
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                );
-            }
+        function checkQ4() {
+            const val = document.getElementById('q4-input').value.trim().toLowerCase();
+            const err = document.getElementById('q4-error');
+            if (val === 'support') {
+                err.classList.remove('show');
+                document.getElementById('act2-iframe').src = ACT2_VIDEO;
+                navigate('page-act2-video');
+            } else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
+        }
 
-            // Video View
-            if (currentView === 'video') {
-                return (
-                    <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
-                        <div className="max-w-5xl w-full">
-                            <button
-                                onClick={handleBackToHome}
-                                className="mb-8 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2"
-                            >
-                                <ChevronLeft size={20} />
-                                <span>Back to Home</span>
-                            </button>
+        // ── ACT III ──────────────────────────────────────────────────
+        function checkQ5() {
+            const val = document.getElementById('q5-input').value.trim();
+            const err = document.getElementById('q5-error');
+            // Accept any non-empty answer — the real moment is the recognition
+            if (val.length > 0) { err.classList.remove('show'); navigate('page-act3-finale'); }
+            else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
+        }
 
-                            <h1 className="text-4xl font-light mb-8 tracking-wider">
-                                {acts[selectedAct].title}
-                            </h1>
+        // ── TRANSCRIPTS ──────────────────────────────────────────────
+        const transcriptOpen = {};
 
-                            <div className="aspect-video w-full bg-gray-900 rounded-lg overflow-hidden">
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src={`https://www.youtube.com/embed/${acts[selectedAct].videoId}`}
-                                    title={acts[selectedAct].title}
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                />
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-        };
+        function toggleTranscript(id) {
+            const body = document.getElementById(`${id}-body`);
+            const icon = document.getElementById(`${id}-icon`);
+            transcriptOpen[id] = !transcriptOpen[id];
+            body.classList.toggle('open', transcriptOpen[id]);
+            icon.textContent = transcriptOpen[id] ? '▴' : '▾';
+        }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        function setLang(transcriptId, lang, btn) {
+            const wrap = document.getElementById(`${transcriptId}-body`);
+            wrap.querySelectorAll('.transcript-text').forEach(el => el.classList.remove('active'));
+            wrap.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`${transcriptId}-${lang}`).classList.add('active');
+            btn.classList.add('active');
+        }
     </script>
 </body>
 
