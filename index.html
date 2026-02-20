@@ -652,6 +652,29 @@
             background: var(--gold-dim);
         }
 
+        /* ── POST-VIDEO PROMPT ── */
+        .post-video-prompt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            margin-top: 1.8rem;
+            padding: 1.6rem 2rem;
+            border: 1px solid var(--border);
+            background: rgba(240, 200, 74, 0.03);
+            width: 100%;
+            animation: fadeUp 1s ease 0.3s both;
+        }
+
+        .post-video-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.85;
+            text-align: center;
+        }
+
         /* ── LOCKED TOOLTIP ── */
         .act-btn-wrap {
             position: relative;
@@ -893,6 +916,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Post-video prompt -->
+            <div class="post-video-prompt">
+                <div class="ornament">✦</div>
+                <p class="post-video-text">
+                    The suspect seems to be Michael! When you're ready, grab the latex gloves hidden inside the stove,
+                    and proceed into the master bedroom. It's time to see who the victims are, and save them before it's
+                    too late.
+                </p>
+                <button class="submit-btn" onclick="navigate('page-act2-q1')">Proceed to Act II →</button>
             </div>
         </div>
     </div>
@@ -1202,6 +1235,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Post-video prompt -->
+            <div class="post-video-prompt">
+                <div class="ornament">✦</div>
+                <p class="post-video-text">
+                    You've saved the victims. It's time to find Michael to figure out his motives. Before you go, check
+                    the closets, you may find the key to what you're looking for.
+                </p>
+                <button class="submit-btn" onclick="navigate('page-act3-q1')">Proceed to Act III →</button>
             </div>
         </div>
     </div>
