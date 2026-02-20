@@ -158,14 +158,41 @@
             z-index: -1;
         }
 
-        .act-btn:hover {
+        .act-btn:hover:not(.locked) {
             color: var(--bg);
             border-color: var(--gold);
             box-shadow: 0 0 40px rgba(240, 200, 74, 0.25);
         }
 
-        .act-btn:hover::before {
+        .act-btn:hover:not(.locked)::before {
             transform: scaleX(1);
+        }
+
+        /* Locked button state */
+        .act-btn.locked {
+            border-color: #3a3020;
+            color: #5a4a30;
+            background: rgba(240, 200, 74, 0.02);
+            cursor: not-allowed;
+        }
+
+        .act-btn.locked::after {
+            content: '🔒';
+            font-size: 0.65rem;
+            margin-left: 0.5rem;
+            opacity: 0.6;
+        }
+
+        /* Completed button state */
+        .act-btn.completed {
+            border-color: var(--gold-dim);
+            color: var(--gold-dim);
+        }
+
+        .act-btn.completed::after {
+            content: ' ✓';
+            font-size: 0.65rem;
+            opacity: 0.8;
         }
 
         .divider {
@@ -624,6 +651,30 @@
         ::-webkit-scrollbar-thumb {
             background: var(--gold-dim);
         }
+
+        /* ── LOCKED TOOLTIP ── */
+        .act-btn-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lock-hint {
+            position: absolute;
+            top: calc(100% + 0.4rem);
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 100;
+            font-size: 0.52rem;
+            letter-spacing: 0.2em;
+            color: #4a3820;
+            text-transform: uppercase;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -638,11 +689,19 @@
         <h1 class="home-title">Before I Choose You</h1>
         <p class="home-subtitle">Seek the truth between the walls</p>
         <div class="act-buttons">
-            <button class="act-btn" onclick="navigate('page-act1-password')">Act I</button>
+            <div class="act-btn-wrap">
+                <button class="act-btn" id="btn-act1" onclick="navigate('page-act1-password')">Act I</button>
+            </div>
             <div class="divider"></div>
-            <button class="act-btn" onclick="navigate('page-act2-q1')">Act II</button>
+            <div class="act-btn-wrap">
+                <button class="act-btn locked" id="btn-act2" onclick="tryAct2()">Act II</button>
+                <span class="lock-hint" id="hint-act2">Complete Act I first</span>
+            </div>
             <div class="divider"></div>
-            <button class="act-btn" onclick="navigate('page-act3-q1')">Act III</button>
+            <div class="act-btn-wrap">
+                <button class="act-btn locked" id="btn-act3" onclick="tryAct3()">Act III</button>
+                <span class="lock-hint" id="hint-act3">Complete Act II first</span>
+            </div>
         </div>
     </div>
 
@@ -688,12 +747,12 @@
 
                             <br><br>
 
-                            It’s somewhat of a miracle that we’re together.
-                            If you think about it, the odds aren’t exactly obvious.
+                            It's somewhat of a miracle that we're together.
+                            If you think about it, the odds aren't exactly obvious.
 
                             <br><br>
 
-                            I’m a Chinese-American boy fresh out of a breakup
+                            I'm a Chinese-American boy fresh out of a breakup
                             who turned to badminton to piece myself back together.
 
                             <br><br>
@@ -713,7 +772,7 @@
 
                             <br><br>
 
-                            That’s a lot of random events lining up.
+                            That's a lot of random events lining up.
 
                             <br><br>
 
@@ -723,12 +782,12 @@
 
                             <br><br>
 
-                            And yet, three years later, we’re still here.
+                            And yet, three years later, we're still here.
 
                             <br><br>
 
                             While others drifted in and out of our lives,
-                            we’re still together.
+                            we're still together.
 
                             Not because it was easy,
                             but because we chose to do so.
@@ -751,11 +810,11 @@
                             <br><br>
 
                             While meeting might have been luck,
-                            staying together hasn’t been.
+                            staying together hasn't been.
 
                             <br><br>
 
-                            It’s taken effort,
+                            It's taken effort,
                             and a good fit.
                         </div>
                         <div class="transcript-text" id="t1-zh">
@@ -1185,11 +1244,75 @@
         const ACT2_VIDEO = 'https://www.youtube.com/embed/4h8EiY-Yl9w?si=G2_kjd0WF8k_5QHH';
         const PASSWORD = 'Santa Cruz';
 
+        // ── COMPLETION STATE ─────────────────────────────────────────
+        const completed = { act1: false, act2: false };
+
+        function unlockAct2() {
+            if (completed.act1) return;
+            completed.act1 = true;
+            const btn = document.getElementById('btn-act2');
+            const hint = document.getElementById('hint-act2');
+            btn.classList.remove('locked');
+            hint.style.opacity = '0';
+            hint.style.pointerEvents = 'none';
+            // Brief flash to draw attention
+            btn.style.transition = 'box-shadow 0.6s ease';
+            btn.style.boxShadow = '0 0 30px rgba(240,200,74,0.5)';
+            setTimeout(() => { btn.style.boxShadow = ''; }, 1200);
+        }
+
+        function unlockAct3() {
+            if (completed.act2) return;
+            completed.act2 = true;
+            const btn = document.getElementById('btn-act3');
+            const hint = document.getElementById('hint-act3');
+            btn.classList.remove('locked');
+            hint.style.opacity = '0';
+            hint.style.pointerEvents = 'none';
+            btn.style.transition = 'box-shadow 0.6s ease';
+            btn.style.boxShadow = '0 0 30px rgba(240,200,74,0.5)';
+            setTimeout(() => { btn.style.boxShadow = ''; }, 1200);
+        }
+
+        function tryAct2() {
+            if (!completed.act1) {
+                // Shake the button to indicate it's locked
+                const btn = document.getElementById('btn-act2');
+                btn.style.animation = 'none';
+                btn.style.transform = 'translateX(-4px)';
+                setTimeout(() => { btn.style.transform = 'translateX(4px)'; }, 80);
+                setTimeout(() => { btn.style.transform = 'translateX(-3px)'; }, 160);
+                setTimeout(() => { btn.style.transform = 'translateX(3px)'; }, 240);
+                setTimeout(() => { btn.style.transform = 'translateX(0)'; }, 320);
+                // Show hint
+                const hint = document.getElementById('hint-act2');
+                hint.style.opacity = '1';
+                setTimeout(() => { hint.style.opacity = ''; }, 2000);
+                return;
+            }
+            navigate('page-act2-q1');
+        }
+
+        function tryAct3() {
+            if (!completed.act2) {
+                const btn = document.getElementById('btn-act3');
+                btn.style.transform = 'translateX(-4px)';
+                setTimeout(() => { btn.style.transform = 'translateX(4px)'; }, 80);
+                setTimeout(() => { btn.style.transform = 'translateX(-3px)'; }, 160);
+                setTimeout(() => { btn.style.transform = 'translateX(3px)'; }, 240);
+                setTimeout(() => { btn.style.transform = 'translateX(0)'; }, 320);
+                const hint = document.getElementById('hint-act3');
+                hint.style.opacity = '1';
+                setTimeout(() => { hint.style.opacity = ''; }, 2000);
+                return;
+            }
+            navigate('page-act3-q1');
+        }
+
         // ── PARTICLE SYSTEM ──────────────────────────────────────────
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
 
-        // Detect mobile — cut counts roughly in half on small screens
         const isMobile = window.innerWidth < 768;
 
         function resize() {
@@ -1205,12 +1328,10 @@
         const EMBER_COLORS = ['#c9a84c', '#e8c96a', '#a07030', '#f0d080', '#8b5e20'];
         const STEAM_COLORS = ['rgba(180,160,100', 'rgba(120,100,60', 'rgba(200,180,120'];
 
-        // Caps: desktop vs mobile
         const MAX_EMBERS = isMobile ? 28 : 70;
         const MAX_STEAM = isMobile ? 8 : 20;
-        const EMBER_INTERVAL = isMobile ? 180 : 90;   // ms
+        const EMBER_INTERVAL = isMobile ? 180 : 90;
         const STEAM_INTERVAL = isMobile ? 500 : 240;
-        // Trail length: mobile gets shorter trails (fewer radialGradient calls)
         const TRAIL_MAX = isMobile ? 6 : 18;
 
         function spawnEmber() {
@@ -1249,12 +1370,10 @@
         }
 
         let lastEmberTime = 0, lastSteamTime = 0;
-        // Target ~30 fps on mobile, 60 on desktop
         const TARGET_MS = isMobile ? 33 : 16;
         let lastFrameTime = 0;
 
         function updateParticles(ts) {
-            // Spawn — use pre-tracked counts instead of filter() every frame
             if (ts - lastEmberTime > EMBER_INTERVAL && emberCount < MAX_EMBERS) {
                 spawnEmber(); lastEmberTime = ts;
             }
@@ -1277,7 +1396,6 @@
                     p.trail.push({ x: p.x, y: p.y, alpha: p.alpha });
                     if (p.trail.length > p.trailLen) p.trail.shift();
 
-                    // Draw steam trail
                     for (let t = 0; t < p.trail.length; t++) {
                         const tp = p.trail[t], tf = t / p.trail.length;
                         const tr = p.size * (0.3 + tf * 0.7) * (1 + tf * 3);
@@ -1289,7 +1407,6 @@
                         ctx.fillStyle = sg; ctx.fill();
                     }
 
-                    // Glow — on mobile skip the outer glow layer to save draw calls
                     if (!isMobile) {
                         const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5);
                         glow.addColorStop(0, `rgba(255,220,100,${p.alpha * 0.9})`);
@@ -1299,7 +1416,6 @@
                         ctx.fillStyle = glow; ctx.fill();
                     }
 
-                    // Core dot
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
                     ctx.fill(); ctx.globalAlpha = 1;
@@ -1310,7 +1426,6 @@
                     p.size += p.growRate;
                     p.alpha = p.maxAlpha * fadeIn * fadeOut;
 
-                    // Mobile: single gradient layer instead of 4
                     const layers = isMobile ? 1 : 4;
                     for (let layer = layers - 1; layer >= 0; layer--) {
                         const lr = p.size * (0.4 + layer * 0.25);
@@ -1333,7 +1448,6 @@
         }
 
         function loop(ts) {
-            // Frame throttle: skip frames to stay near target rate on mobile
             if (ts - lastFrameTime < TARGET_MS) {
                 requestAnimationFrame(loop);
                 return;
@@ -1356,6 +1470,12 @@
             document.getElementById('backBtn').classList.toggle('visible', id !== 'page-home');
             canvas.classList.toggle('dimmed', VIDEO_PAGES.has(id));
             if (!skipHistory) history.pushState({ page: id }, '', '#' + id);
+
+            // Mark act buttons as completed when returning home after finishing an act
+            if (id === 'page-home') {
+                if (completed.act1) document.getElementById('btn-act1').classList.add('completed');
+                if (completed.act2) document.getElementById('btn-act2').classList.add('completed');
+            }
         }
 
         window.addEventListener('popstate', e => navigate(e.state?.page || 'page-home', true));
@@ -1374,6 +1494,7 @@
                 err.classList.remove('show');
                 document.getElementById('act1-iframe').src = ACT1_VIDEO;
                 navigate('page-act1-video');
+                unlockAct2(); // Unlock Act II upon completing Act I
             } else {
                 err.classList.add('show');
                 setTimeout(() => err.classList.remove('show'), 2500);
@@ -1431,6 +1552,7 @@
                 err.classList.remove('show');
                 document.getElementById('act2-iframe').src = ACT2_VIDEO;
                 navigate('page-act2-video');
+                unlockAct3(); // Unlock Act III upon completing Act II
             } else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
         }
 
