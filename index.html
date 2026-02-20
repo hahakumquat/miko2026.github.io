@@ -1241,7 +1241,7 @@
                 <div class="ornament">✦</div>
                 <p class="post-video-text">
                     You've saved the victims. It's time to find Michael to figure out his motives. Before you go, check
-                    the closets, you may find the key to what you're looking for.
+                    the closets, you may find the key to the final room.
                 </p>
                 <button class="submit-btn" onclick="navigate('page-act3-q1')">Proceed to Act III →</button>
             </div>
@@ -1282,8 +1282,8 @@
     </div>
 
     <script>
-        const ACT1_VIDEO = 'https://www.youtube.com/embed/fL9YZWjp0SY?si=0G7Z5zVboJOnSQfe';
-        const ACT2_VIDEO = 'https://www.youtube.com/embed/4h8EiY-Yl9w?si=G2_kjd0WF8k_5QHH';
+        const ACT1_VIDEO = 'https://www.youtube.com/embed/fL9YZWjp0SY?si=0G7Z5zVboJOnSQfe&enablejsapi=1';
+        const ACT2_VIDEO = 'https://www.youtube.com/embed/4h8EiY-Yl9w?si=G2_kjd0WF8k_5QHH&enablejsapi=1';
         const PASSWORD = 'Santa Cruz';
 
         // ── COMPLETION STATE ─────────────────────────────────────────
@@ -1505,7 +1505,18 @@
         const VIDEO_PAGES = new Set(['page-act1-video', 'page-act2-video']);
         let currentPage = 'page-home';
 
+        function stopVideos() {
+            // Pause YouTube iframes by posting a pause command via postMessage
+            document.querySelectorAll('iframe').forEach(iframe => {
+                iframe.contentWindow.postMessage(
+                    JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }),
+                    '*'
+                );
+            });
+        }
+
         function navigate(id, skipHistory = false) {
+            stopVideos();
             document.querySelector(`#${currentPage}`).classList.remove('active');
             document.querySelector(`#${id}`).classList.add('active');
             currentPage = id;
@@ -1602,7 +1613,7 @@
         function checkQ5() {
             const val = document.getElementById('q5-input').value.trim();
             const err = document.getElementById('q5-error');
-            if (val.length > 0 && val.toLowerCase() === "carrot") { err.classList.remove('show'); navigate('page-act3-finale'); }
+            if (val.length > 0 && val.toLowerCase() === "michael") { err.classList.remove('show'); navigate('page-act3-finale'); }
             else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
         }
 
