@@ -1153,14 +1153,14 @@
         <h2 class="section-title">Find the Suspect</h2>
         <div class="act2-wrap">
             <p class="question-text">
-                The evidence has been gathered.<br>
-                The witnesses have spoken.<br><br>
+                You saved the victims.<br>
+                You've identified the suspect.<br><br>
                 <em>Who is the one who has been with you<br>through everything — all along?</em>
             </p>
             <div class="ornament">✦</div>
-            <input class="answer-input" id="q5-input" type="text" placeholder="name the suspect…"
+            <input class="answer-input" id="q5-input" type="text" placeholder="Name the suspect…"
                 onkeydown="if(event.key==='Enter')checkQ5()">
-            <p class="pw-error" id="q5-error">Look closer. The answer is right before you.</p>
+            <p class="pw-error" id="q5-error">Try again, it's the name of your boyfriend...</p>
             <button class="submit-btn" onclick="checkQ5()">Reveal</button>
         </div>
     </div>
@@ -1173,8 +1173,7 @@
             <div class="finale-door">🚪</div>
             <p class="finale-message">
                 The mystery has been solved.<br>
-                The suspect has been found.<br><br>
-                You may now open the final door.
+                You may now open the final door. <br>
             </p>
             <div class="ornament">✦</div>
             <p class="finale-sub">The truth was always here</p>
@@ -1439,7 +1438,7 @@
         function checkQ5() {
             const val = document.getElementById('q5-input').value.trim();
             const err = document.getElementById('q5-error');
-            if (val.length > 0) { err.classList.remove('show'); navigate('page-act3-finale'); }
+            if (val.length > 0 && val.toLowerCase() === "michael") { err.classList.remove('show'); navigate('page-act3-finale'); }
             else { err.classList.add('show'); setTimeout(() => err.classList.remove('show'), 2500); }
         }
 
